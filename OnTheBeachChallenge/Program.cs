@@ -15,11 +15,11 @@ namespace OnTheBeachChallenge
         public class Job
         {
             public char X { get; set; }
-            public List<Job> Dependents { get; set; }
+            public List<Job> Dependencies { get; set; }
             public Job(char x)
             {
                 this.X = x;
-                this.Dependents = new List<Job>();
+                this.Dependencies = new List<Job>();
             }
         }
 
@@ -39,12 +39,44 @@ namespace OnTheBeachChallenge
                     }
 
                     markedChars.Add(jobs[i].X);
-                    GetJobSequence(jobs[i].Dependents, markedChars);
+                    GetJobSequence(jobs[i].Dependencies, markedChars);
                     DoneChars.Add(jobs[i].X);
                     markedChars.Clear();
                 }
             }
 
+        }
+
+        private List<Job> ParseInput(List<string> inputJobs)
+        {
+            var jobs = new List<Job>();
+
+            var jobPairs = inputJobs.Select(i => i.Split(new string[] { "=>" }, StringSplitOptions.None))
+                                    .Select(i => i.Select(j => j.Trim()).ToArray());
+
+            if (jobPairs.Any(j => j.Length < 1 || j.Length > 2))
+                throw new ArgumentException("Invalid Format of Jobs");
+
+            if (jobPairs.Any(j => (j.Length == 1 && j[0].Length != 1)
+                               || (j.Length == 2 && (j[0].Length != 1 || j[1].Length > 1))))
+                throw new ArgumentException("Each job must be represented by a single character");
+
+            jobs.AddRange(jobPairs.Select(j => j[0][0])
+                                  .Distinct()
+                                  .Select(j => new Job(j)));
+
+            var jobDependencies = jobPairs.Where(j => j.Length == 2 && j[1].Length > 0).ToArray();
+            foreach (var d in jobDependencies)
+            {
+                var job = jobs.FirstOrDefault(j => j.X == d[0][0]);
+                var dependent = jobs.FirstOrDefault(j => j.X == d[1][0]);
+                if (job == null || dependent == null)
+                    throw new ArgumentException("Input contains missing jobs.");
+
+                job.Dependencies.Add(dependent);
+            }
+
+            return jobs;
         }
 
         static void Main(string[] args)
@@ -56,10 +88,10 @@ namespace OnTheBeachChallenge
             Job j5 = new Job('e');
             Job j6 = new Job('f');
 
-            j2.Dependents.Add(j3);
-            j3.Dependents.Add(j6);
-            j4.Dependents.Add(j1);
-            j5.Dependents.Add(j2);
+            j2.Dependencies.Add(j3);
+            j3.Dependencies.Add(j6);
+            j4.Dependencies.Add(j1);
+            j5.Dependencies.Add(j2);
 
             var jobs = new List<Job>() { j1, j2, j3, j4, j5, j6 };
             var markedChars = new List<Char>();
