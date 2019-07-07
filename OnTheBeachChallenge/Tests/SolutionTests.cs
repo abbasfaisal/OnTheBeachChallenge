@@ -1,19 +1,15 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using NUnit.Framework;
 
 namespace OnTheBeachChallenge
 {
+    [TestFixture]
     public partial class Solution
     {
-        /// <summary>
-        /// Contains unit tests for methods of class solution. Uses NUnit.
-        /// </summary>
-        [TestFixture]
         public class TestClass
         {
             private Solution solution = new Solution();
@@ -132,37 +128,9 @@ namespace OnTheBeachChallenge
                 TestInvalidInputFormats(new List<string>() { "a => a => a" }, formatException);
             }
 
-            /// <summary>
-            /// Basic tests for output from GetJobSequence().
-            /// </summary>
-            [Test]
-            public void UT_GetJobSequence_Basic()
-            {
-                TestJobSequence(new List<string>() { "a" }, "a");
-                TestJobSequence(new List<string>() { "a", "b", "c" }, "abc");
-                TestJobSequence(new List<string>() { "a => ", "b => c", "c =>" }, "acb");
-                var result = this.solution.GetJobSequence(new List<string>() { "a", "b => c", "c => f", "d => a", "e => b", "f" });
-                Assert.IsTrue(result.Length == 6 &&
-                              IsBefore(result, 'c', 'b') &&
-                              IsBefore(result, 'f', 'c') &&
-                              IsBefore(result, 'a', 'd') &&
-                              IsBefore(result, 'b', 'e') &&
-                              result.Contains('a'));
-            }
-
-            /// <summary>
-            /// Basic tests for output from GetJobSequence().
-            /// </summary>
-            public void UT_GetJobSequence_circularInput()
-            {
-                TestcircularDependency(new List<string>() { "a => a" });
-                TestcircularDependency(new List<string>() { "a => ", "b => ", "c => c" });
-                TestcircularDependency(new List<string>() { "a =>", "b =>c", "c => f", "d => a", " e =>", "f=>b" });
-            }
-
             #region HelperFunctions
 
-            private void TestJobsList(List<char> actualJobsList, List<Job<char>> parsedJobsList)
+            private void TestJobsList(List<char> actualJobsList, List<Job> parsedJobsList)
             {
                 Console.WriteLine("Checking number of jobs returned....");
                 Assert.AreEqual(actualJobsList.Count, parsedJobsList.Count);
@@ -171,7 +139,7 @@ namespace OnTheBeachChallenge
                     Assert.IsTrue(actualJobsList[i] == parsedJobsList[i].Title);
             }
 
-            private void TestDependenciesList(List<char> jobsList, List<List<char>> dependenciesList, List<Job<char>> parsedJobsList)
+            private void TestDependenciesList(List<char> jobsList, List<List<char>> dependenciesList, List<Job> parsedJobsList)
             {
                 Assert.AreEqual(jobsList.Count, parsedJobsList.Count);
                 for (var i = 0; i < jobsList.Count; i++)
@@ -189,23 +157,6 @@ namespace OnTheBeachChallenge
             {
                 var result = Assert.Throws<ArgumentException>(() => this.solution.ParseInput(inputs));
                 Assert.IsTrue(result.Message == exceptionMessage);
-            }
-
-            private void TestJobSequence(List<string> inputs, string output)
-            {
-                var result = this.solution.GetJobSequence(inputs);
-                Assert.IsTrue(result == output);
-            }
-
-            private bool IsBefore(string str, char first, char second)
-            {
-                return str.Contains(first) && str.Contains(second) && str.IndexOf(first) < str.IndexOf(second);
-            }
-
-            private void TestcircularDependency(List<string> inputs)
-            {
-                var result = Assert.Throws<ArgumentException>(() => this.solution.GetJobSequence(inputs));
-                Assert.IsTrue(result.Message == "Input contains circular dependency");
             }
 
             #endregion

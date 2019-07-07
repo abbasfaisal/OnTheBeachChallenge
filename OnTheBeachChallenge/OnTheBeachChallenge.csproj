@@ -51,9 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JobSequencer.cs" />
     <Compile Include="Solution.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\Solution.cs" />
+    <Compile Include="Tests\JobSequencerTests.cs" />
+    <Compile Include="Tests\SolutionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

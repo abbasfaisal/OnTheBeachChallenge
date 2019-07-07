@@ -1,50 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OnTheBeachChallenge
 {
-    /// <summary>
-    /// Main class that takes jobs as strings, processes them and outputs their order.
-    /// </summary>    
-    /// 
-    /// <remarks>
-    /// Job sorting is done through the algorithm known as Topological Sorting.
-    /// We pass a job, then we pass it's dependents recursively until all the dependencies and grand-dependencies of this job have been passed, saving them to the final result along the way. If a job occurs more than once during a pass, it means that input contains a circular dependency, so an argument exception is thrown.
-    /// </remarks>
-    public partial class Solution
+    partial class Solution : JobSequencer<char>
     {
-        //
-        // Summary:
-        //      Holds the sorted sequence.
-        //
-        private List<char> JobSequence = new List<char>();
-
-        //
-        // Summary:
-        //      Represents a job with title and dependencies.
-        //
-        private class Job<T>
-            where T : struct
-        {
-            public T Title { get; private set; }
-            public List<Job<T>> Dependencies { get; private set; }
-
-            public Job(T title)
-            {
-                this.Title = title;
-                this.Dependencies = new List<Job<T>>();
-            }
-        }
-
         //
         // Summary:
         //      Method to parse list of strings representing jobs and converts them into jobs represented by a single character for internal processing.
         //      Throws ArgumentException. See GetJobSequence for list of acceptable job formats.
         //
-        private List<Job<char>> ParseInput(List<string> inputJobs)
+        private List<Job> ParseInput(List<string> inputJobs)
         {
-            var jobs = new List<Job<char>>();
+            var jobs = new List<Job>();
 
             var jobPairs = inputJobs.Select(i => i.Split(new string[] { "=>" }, StringSplitOptions.None))
                                     .Select(i => i.Select(j => j.Trim()).ToArray());
@@ -58,7 +29,7 @@ namespace OnTheBeachChallenge
 
             jobs.AddRange(jobPairs.Select(j => j[0][0])
                                   .Distinct()
-                                  .Select(j => new Job<char>(j)));
+                                  .Select(j => new Job(j)));
 
             var jobDependencies = jobPairs.Where(j => j.Length == 2 && j[1].Length > 0).ToArray();
             foreach (var d in jobDependencies)
@@ -74,65 +45,28 @@ namespace OnTheBeachChallenge
             return jobs;
         }
 
-        //
-        // Summary:
-        //      Processes a list of jobs and saves result in JobSequence field.
-        //      Throws ArgumentException if input contains circular dependency.
-        //
-        private void GenerateJobSequence(List<Job<char>> jobs)
-        {
-            this.JobSequence.Clear();
-            var visited = new List<char>();
-
-            foreach (var job in jobs)
-                VisitJob(job, visited);
-        }
-
-        //
-        // Summary:
-        //      Helper method used by GenerateJobSequence.
-        //
-        private void VisitJob(Job<char> job, List<char> visited)
-        {
-            if (visited.Contains(job.Title))
-                throw new ArgumentException("Input contains circular dependency");
-
-            else if (!JobSequence.Contains(job.Title))
-            {
-                visited.Add(job.Title);
-                foreach (var j in job.Dependencies)
-                    VisitJob(j, visited);
-
-                visited.Remove(job.Title);
-                JobSequence.Add(job.Title);
-            }
-        }
-
         /// <summary>
         /// Public interface of the solution class.
         /// </summary>
         /// 
         /// <param name="inputs">
-        /// List of strings where each string represents a job. Each job must be represented by a single character. A job and it's dependency must be separated by '=>'. Each job may have multiple dependecies but each string can contain one job and one dependency.
+        /// List of strings where each string represents a job. Each job must be represented by a single character. A job and it's dependency must be separated by '=>'. Each job may have multiple dependencies but each string must contain only one job and one dependency.
         /// </param>
         /// 
         /// <returns>
-        /// String representing job names in ordered manner.
+        /// List containing job titles in ordered manner.
         /// </returns>
         /// 
         /// <example>
         /// Some examples of valid inputs are: 'a', 'a => a', 'a=>', 'a=>'.
         /// Some examples of invalid inputs are: '=>', 'aa =>', 'a=>aaa', '', 'a=>a=>b'.
         /// </example>
-        /// 
-        // TODO: Put this into an abstract class to work with different types of input titles. Right now this only works with jobs represented by a single character.
-        public string GetJobSequence(List<string> inputs)
+        public override List<char> GetJobSequence(List<string> inputs)
         {
             var jobs = ParseInput(inputs);
             try
             {
-                GenerateJobSequence(jobs);
-                return new string(JobSequence.ToArray());
+                return GenerateJobSequence(jobs);
             }
             catch (Exception) { /* TODO: Log the exception */ throw; }
         }
@@ -152,7 +86,7 @@ namespace OnTheBeachChallenge
                         };
                 Array.ForEach(inputs, input =>
                 {
-                    try { OutputToConsole(input, solution.GetJobSequence(input)); }
+                    try { OutputToConsole(input, new string(solution.GetJobSequence(input).ToArray())); }
                     catch (Exception ex) { OutputToConsole(input, ex.Message); }
                 });
             }
