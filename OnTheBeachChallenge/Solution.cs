@@ -8,21 +8,22 @@ namespace OnTheBeachChallenge
     {
         private List<char> JobSequence = new List<char>();
 
-        private class Job
+        private class Job<T>
+            where T : struct
         {
-            public char Title { get; private set; }
-            public List<Job> Dependencies { get; private set; }
+            public T Title { get; private set; }
+            public List<Job<T>> Dependencies { get; private set; }
 
-            public Job(char title)
+            public Job(T title)
             {
                 this.Title = title;
-                this.Dependencies = new List<Job>();
+                this.Dependencies = new List<Job<T>>();
             }
         }
 
-        private List<Job> ParseInput(List<string> inputJobs)
+        private List<Job<char>> ParseInput(List<string> inputJobs)
         {
-            var jobs = new List<Job>();
+            var jobs = new List<Job<char>>();
 
             var jobPairs = inputJobs.Select(i => i.Split(new string[] { "=>" }, StringSplitOptions.None))
                                     .Select(i => i.Select(j => j.Trim()).ToArray());
@@ -36,7 +37,7 @@ namespace OnTheBeachChallenge
 
             jobs.AddRange(jobPairs.Select(j => j[0][0])
                                   .Distinct()
-                                  .Select(j => new Job(j)));
+                                  .Select(j => new Job<char>(j)));
 
             var jobDependencies = jobPairs.Where(j => j.Length == 2 && j[1].Length > 0).ToArray();
             foreach (var d in jobDependencies)
@@ -52,7 +53,7 @@ namespace OnTheBeachChallenge
             return jobs;
         }
 
-        private void GenerateJobSequence(List<Job> jobs)
+        private void GenerateJobSequence(List<Job<char>> jobs)
         {
             this.JobSequence.Clear();
             var visited = new List<char>();
@@ -61,7 +62,7 @@ namespace OnTheBeachChallenge
                 VisitJob(job, visited);
         }
 
-        private void VisitJob(Job job, List<char> visited)
+        private void VisitJob(Job<char> job, List<char> visited)
         {
             if (visited.Contains(job.Title))
                 throw new ArgumentException("Input contains circular dependency");
@@ -85,7 +86,7 @@ namespace OnTheBeachChallenge
                 GenerateJobSequence(jobs);
                 return new string(JobSequence.ToArray());
             }
-            catch (Exception) { throw; }
+            catch (Exception) { /* TODO: Log the exception */ throw; }
         }
 
         static void Main(string[] args)

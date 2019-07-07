@@ -80,7 +80,7 @@ namespace OnTheBeachChallenge
                 TestJobsList(actualJobsList, parsedJobsList);
             }
 
-            private void TestJobsList(List<char> actualJobsList, List<Job> parsedJobsList)
+            private void TestJobsList(List<char> actualJobsList, List<Job<char>> parsedJobsList)
             {
                 Console.WriteLine("Checking number of jobs returned....");
                 Assert.AreEqual(actualJobsList.Count, parsedJobsList.Count);
