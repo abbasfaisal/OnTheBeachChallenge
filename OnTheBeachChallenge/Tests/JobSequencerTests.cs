@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace OnTheBeachChallenge
 {
     /// <summary>
-    /// Contains unit tests for methods of class JobSequence. Uses NUnit.
+    /// Contains unit tests for methods of class JobSequencer. Uses NUnit.
     /// </summary>
     public class JobSequencerTest : JobSequencer<char>
     {
