@@ -24,7 +24,7 @@ namespace OnTheBeachChallenge
             private JobSequencerTest testObject = new JobSequencerTest();
 
             /// <summary>
-            /// Basic tests for testing circular dependencies from GenerateJobSequence().
+            /// Basic tests for output from GenerateJobSequence().
             /// </summary>
             [Test]
             public void UT_GetJobSequence_Basic()
@@ -55,7 +55,7 @@ namespace OnTheBeachChallenge
             }
 
             /// <summary>
-            /// Basic tests for output from GenerateJobSequence().
+            /// Basic tests for testing circular dependencies from GenerateJobSequence().
             /// </summary>
             public void UT_GetJobSequence_circularInput()
             {

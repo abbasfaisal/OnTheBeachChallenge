@@ -11,9 +11,12 @@ namespace OnTheBeachChallenge
     /// <remarks>
     /// Job sorting is done through the algorithm known as Topological Sorting.
     /// We pass a job, then we pass it's dependents recursively until all the dependencies and grand-dependencies of this job have been passed, saving them to the final result along the way. If a job occurs more than once during a pass, it means that input contains a circular dependency, so an argument exception is thrown.
+    /// 
+    /// To Do:
+    /// This should only work correctly with struct or string as generic parameter. For other types of generic parameter, we would need a way to check for job title by *value* in VisitJob().
+    /// Note: The whole solution could be simplified if we choose to represent job title using a string.
     /// </remarks>
     public abstract partial class JobSequencer<T> // T is the type of title of a job
-        where T : struct
     {
         //
         // Summary:

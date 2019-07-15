@@ -24,5 +24,8 @@ The solution runs in linear time. Each input job when passed is marked along wit
 - Main function contains some basic tests. Running the project provides output of these tests.
 - Tests directory contains extensive unit tests which can be run by pressing Ctrl+R then A.
 
+## To Do
+[JobSequencer](OnTheBeachChallenge/Src/JobSequencer.cs) should only work correctly with struct or string as generic parameter. To make it work with other types of generic parameter, we need a way to check for job title by value in `VisitJob()`. 
+
 ## Feedback
 Please feel free to provide feedback and suggestions.
